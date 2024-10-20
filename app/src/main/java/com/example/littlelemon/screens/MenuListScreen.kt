@@ -1,5 +1,6 @@
-package com.example.littlelemon
+package com.example.littlelemon.screens
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -14,6 +15,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -24,19 +26,27 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.littlelemon.Dish
+import com.example.littlelemon.R
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun MenuListScreen(){
-    Column {
-        UpperPannel()
-        LowerPannel()
+    Scaffold(
+        topBar = { TopAppBar() }
+    ){
+        Column {
+            UpperPanel()
+            LowerPanel()
+        }
     }
 }
 
 @Composable
-private fun UpperPannel(){
+private fun UpperPanel(){
     Column(
-        modifier = Modifier.background(Color(0xFF495E57))
+        modifier = Modifier
+            .background(Color(0xFF495E57))
             .fillMaxWidth()
             .padding(start = 12.dp, end = 12.dp, top = 16.dp, bottom = 16.dp)
     ) {
@@ -51,13 +61,14 @@ private fun UpperPannel(){
         text = stringResource(id = R.string.order_for_takeaway),
         fontSize = 24.sp,
         fontWeight = FontWeight.Bold,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
             .padding(8.dp)
     )
 }
 
 @Composable
-private fun LowerPannel(){
+private fun LowerPanel(){
     Column {
         LazyRow {
             items(Categories){ category ->
@@ -95,7 +106,8 @@ fun MenuCategory(category: String){
 fun MenuDish(Dish: Dish){
     Card {
         Row(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .padding(8.dp)
         ) {
             Column {
@@ -107,7 +119,8 @@ fun MenuDish(Dish: Dish){
                 Text(
                     text = Dish.description,
                     color = Color.Gray,
-                    modifier = Modifier.padding(top = 5.dp, bottom = 5.dp)
+                    modifier = Modifier
+                        .padding(top = 5.dp, bottom = 5.dp)
                         .fillMaxWidth(.75f)
                 )
                 Text(

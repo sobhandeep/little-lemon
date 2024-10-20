@@ -1,5 +1,6 @@
-package com.example.littlelemon
+package com.example.littlelemon.screens
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -14,6 +15,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -26,64 +28,73 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import com.example.littlelemon.R
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun HomeScreen(){
-    Column{
-        Column(
-            modifier = Modifier
-                .background(Color(0xFF495E57))
-                .padding(start = 12.dp, end = 12.dp, top = 16.dp, bottom = 16.dp)
-        ) {
-            Text(
-                text = stringResource(id = R.string.title),
-                fontSize = 40.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFFF4CE14)
-            )
-            Text(
-                text = stringResource(id = R.string.location),
-                fontSize = 24.sp,
-                color = Color(0xFFEDEFEE)
-            )
-            Row(
-                modifier = Modifier.padding(top = 18.dp)
+fun HomeScreen(navController: NavHostController){
+    Scaffold(
+        topBar = { TopAppBar() }
+    )  {
+        Column {
+            Column(
+                modifier = Modifier
+                    .background(Color(0xFF495E57))
+                    .padding(start = 12.dp, end = 12.dp, top = 16.dp, bottom = 16.dp)
             ) {
                 Text(
-                    text = stringResource(id = R.string.description),
-                    color = Color(0xFFEDEFEE),
-                    fontSize = 18.sp,
-                    modifier = Modifier
-                        .padding(bottom = 28.dp)
-                        .fillMaxWidth(0.6f)
-                )
-                Image(
-                    painter = painterResource(id = R.drawable.upperpanelimage),
-                    contentDescription = "Upper Panel Image",
-                    modifier = Modifier.clip(RoundedCornerShape(20.dp))
-                )
-            }
-            Button(
-                onClick = { /* TODO */ },
-                shape = RoundedCornerShape(20.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF4CE14))
-            ) {
-                Text(
-                    text = stringResource(id = R.string.orderbuttontext),
-                    fontSize = 18.sp,
+                    text = stringResource(id = R.string.title),
+                    fontSize = 40.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF333333)
+                    color = Color(0xFFF4CE14)
                 )
+                Text(
+                    text = stringResource(id = R.string.location),
+                    fontSize = 24.sp,
+                    color = Color(0xFFEDEFEE)
+                )
+                Row(
+                    modifier = Modifier.padding(top = 18.dp)
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.description),
+                        color = Color(0xFFEDEFEE),
+                        fontSize = 18.sp,
+                        modifier = Modifier
+                            .padding(bottom = 28.dp)
+                            .fillMaxWidth(0.6f)
+                    )
+                    Image(
+                        painter = painterResource(id = R.drawable.upperpanelimage),
+                        contentDescription = "Upper Panel Image",
+                        modifier = Modifier.clip(RoundedCornerShape(20.dp))
+                    )
+                }
+                Button(
+                    onClick = { /* TODO */ },
+                    shape = RoundedCornerShape(20.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF4CE14))
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.orderbuttontext),
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF333333)
+                    )
+                }
             }
+            LowerPanel()
         }
-        LowerPanel()
     }
 }
 
 @Composable
 fun TopAppBar(){
     Box(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 35.dp)
     ){
         IconButton(
             onClick = {/* TODO */},
@@ -97,7 +108,8 @@ fun TopAppBar(){
         Image(
             painter = painterResource(id = R.drawable.littlelemonimgtxt_nobg),
             contentDescription = "Little Lemon Logo",
-            modifier = Modifier.fillMaxWidth(.32f)
+            modifier = Modifier
+                .fillMaxWidth(.32f)
                 .align(Alignment.Center)
         )
         IconButton(
@@ -143,10 +155,4 @@ fun MenuDish(){
             MenuDish(Dish)
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun HomePreView(){
-    HomeScreen()
 }

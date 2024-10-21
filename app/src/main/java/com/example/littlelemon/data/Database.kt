@@ -30,7 +30,7 @@ interface MenuItemDao {
     fun isEmpty(): Boolean
 }
 
-@Database(entities = [MenuItemRoom::class], version = 2)
+@Database(entities = [MenuItemRoom::class], version = 2, exportSchema = false)
 abstract class AppDataBase: RoomDatabase(){
     abstract fun menuItemDao(): MenuItemDao
 }

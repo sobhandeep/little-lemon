@@ -16,8 +16,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,15 +33,6 @@ fun ProfileScreen(context: Context, navController: NavHostController){
     val sharedPreferences = context.getSharedPreferences("Little Lemon", Context.MODE_PRIVATE)
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
-    val firstName = remember {
-        mutableStateOf("")
-    }
-    val lastName = remember {
-        mutableStateOf("")
-    }
-    val email = remember {
-        mutableStateOf("")
-    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -75,9 +64,9 @@ fun ProfileScreen(context: Context, navController: NavHostController){
                     .padding(start = 16.dp, end = 16.dp),
                 enabled = false,
                 readOnly = true,
-                value = firstName.value,
+                value = sharedPreferences.getString("firstName", "")?: "",
                 onValueChange = {
-                    firstName.value = it
+
                 },
                 singleLine = true,
                 shape = RoundedCornerShape(15.dp),
@@ -101,9 +90,9 @@ fun ProfileScreen(context: Context, navController: NavHostController){
                     .padding(start = 16.dp, end = 16.dp),
                 enabled = false,
                 readOnly = true,
-                value = lastName.value,
+                value = sharedPreferences.getString("lastName", "")?: "",
                 onValueChange = {
-                    firstName.value = it
+
                 },
                 singleLine = true,
                 shape = RoundedCornerShape(15.dp),
@@ -127,9 +116,9 @@ fun ProfileScreen(context: Context, navController: NavHostController){
                     .padding(start = 16.dp, end = 16.dp),
                 enabled = false,
                 readOnly = true,
-                value = email.value,
+                value = sharedPreferences.getString("firstName", "")?: "",
                 onValueChange = {
-                    firstName.value = it
+
                 },
                 singleLine = true,
                 shape = RoundedCornerShape(15.dp),

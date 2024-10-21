@@ -14,7 +14,7 @@ fun NavGraphBuilder.profileNav(context: Context, navController: NavHostControlle
         startDestination = Screen.Profile.route,
         route = PROFILE_ROUTE
     ) {
-        composable(route = Screen.Onboard.route) {
+        composable(route = Screen.Profile.route) {
             ProfileScreen(context, navController)
         }
     }

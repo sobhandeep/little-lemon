@@ -6,7 +6,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import com.example.littlelemon.HOME_ROUTE
 import com.example.littlelemon.ONBOARDING_ROUTE
-import com.example.littlelemon.ROOT_ROUTE
 
 @Composable
 fun SetupNavGraph(context: Context, navController: NavHostController){
@@ -18,11 +17,10 @@ fun SetupNavGraph(context: Context, navController: NavHostController){
     NavHost(
         navController = navController,
         startDestination = startDestination,
-        route = ROOT_ROUTE
     ) {
         onboardingNav(context, navController)
-        profileNav(context, navController)
         homeNav(navController)
+        profileNav(context, navController)
 
     }
 }

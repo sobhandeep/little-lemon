@@ -1,157 +1,314 @@
 package com.example.littlelemon.screens
 
-import android.annotation.SuppressLint
+import android.app.Application
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import coil3.compose.AsyncImage
+import com.example.littlelemon.PROFILE_ROUTE
 import com.example.littlelemon.R
+import com.example.littlelemon.data.MenuItemRoom
+import com.example.littlelemon.data.ViewModel
+import com.example.littlelemon.data.ViewModelFactory
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun HomeScreen(navController: NavHostController){
-    Scaffold(
-        topBar = { TopAppBar() }
-    )  {
-        Column {
-            Column(
-                modifier = Modifier
-                    .background(Color(0xFF495E57))
-                    .padding(start = 12.dp, end = 12.dp, top = 16.dp, bottom = 16.dp)
-            ) {
-                Text(
-                    text = stringResource(id = R.string.title),
-                    fontSize = 40.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFFF4CE14)
-                )
-                Text(
-                    text = stringResource(id = R.string.location),
-                    fontSize = 24.sp,
-                    color = Color(0xFFEDEFEE)
-                )
-                Row(
-                    modifier = Modifier.padding(top = 18.dp)
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.description),
-                        color = Color(0xFFEDEFEE),
-                        fontSize = 18.sp,
-                        modifier = Modifier
-                            .padding(bottom = 28.dp)
-                            .fillMaxWidth(0.6f)
-                    )
-                    Image(
-                        painter = painterResource(id = R.drawable.upperpanelimage),
-                        contentDescription = "Upper Panel Image",
-                        modifier = Modifier.clip(RoundedCornerShape(20.dp))
-                    )
-                }
-                Button(
-                    onClick = { /* TODO */ },
-                    shape = RoundedCornerShape(20.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF4CE14))
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.orderbuttontext),
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF333333)
-                    )
-                }
-            }
-            LowerPanel()
+fun HomeScreen(navController: NavHostController) {
+
+    val application = LocalContext.current.applicationContext as Application
+    val viewModel: ViewModel = viewModel(factory = ViewModelFactory(application))
+    val databaseMenuItems = viewModel.getMenuItems().observeAsState(emptyList()).value
+    val search = remember {
+        mutableStateOf("")
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.fetchMenuData()
+    }
+
+
+    Column {
+        Header(navController)
+        UpperPanel {
+            search.value = it
         }
+        LowerPanel(databaseMenuItems, search)
     }
 }
 
 @Composable
-fun TopAppBar(){
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 35.dp)
-    ){
-        IconButton(
-            onClick = {/* TODO */},
-            modifier = Modifier.align(Alignment.CenterStart)
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_hamburger_menu),
-                contentDescription = "Menu Icon"
-            )
-        }
-        Image(
-            painter = painterResource(id = R.drawable.littlelemonimgtxt_nobg),
+fun Header(navController: NavHostController){
+    Row(
+        modifier = Modifier.fillMaxWidth()
+            .padding(horizontal = 10.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween) {
+        Spacer(modifier = Modifier.width(50.dp))
+        Image(painter = painterResource(id = R.drawable.littlelemonimgtxt_nobg),
             contentDescription = "Little Lemon Logo",
             modifier = Modifier
-                .fillMaxWidth(.32f)
-                .align(Alignment.Center)
-        )
-        IconButton(
-            onClick = { /* TODO */},
-            modifier = Modifier.align(Alignment.CenterEnd)
+                .fillMaxWidth(0.65f))
+
+        Box(modifier = Modifier.size(50.dp)
+            .clickable { navController.navigate(PROFILE_ROUTE) }){
+            Icon(
+                imageVector = Icons.Default.AccountCircle,
+                contentDescription = "Profile Icon",
+                tint = Color(0xFF495E57),
+                modifier = Modifier.fillMaxSize()
+                    .padding(vertical = 2.dp))
+        }
+    }
+}
+
+@Composable
+fun UpperPanel(search : (parameter: String)-> Unit) {
+    val searchPhrase = remember {
+        mutableStateOf("")
+    }
+
+    Column(modifier = Modifier.background(Color(0xFF495E57))
+        .padding(horizontal = 20.dp, vertical = 10.dp)
+    ) {
+        Text(
+            text = stringResource(R.string.title),
+            style = MaterialTheme.typography.headlineMedium,
+            color = Color(0xFFF4CE14))
+        Text(text = stringResource(id = R.string.location),
+            style = MaterialTheme.typography.headlineSmall,
+            color = Color.White)
+        Row(Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Box{
-                Image(
-                    painter = painterResource(id = R.drawable.ic_basket),
-                    contentDescription = "Basket"
-                )
+            Text(text = stringResource(R.string.description),
+                color = Color.White,
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Image(
+                painter = painterResource(id = R.drawable.upperpanelimage),
+                contentDescription = "Hero Image",
+                modifier = Modifier.clip(RoundedCornerShape(16.dp))
+            )
+        }
+
+        Spacer(modifier = Modifier.size(10.dp))
+        OutlinedTextField(value = searchPhrase.value,
+            onValueChange = {
+                searchPhrase.value = it
+                search(searchPhrase.value)
+            },
+            placeholder = {
+                Text(text = "Enter Search Phrase")
+            },
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = "Search Icon")
+            },
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = Color(0xFF496E57),
+                unfocusedBorderColor = Color(0xFF333333),
+                focusedTextColor = Color(0xFF496E57),
+                unfocusedTextColor = Color(0xFF333333),
+                focusedLabelColor = Color(0xFF496E57),
+                unfocusedLabelColor = Color(0xFF333333),
+                cursorColor = Color(0xFF496E57),
+                focusedLeadingIconColor = Color(0xFF496E57),
+                unfocusedLeadingIconColor = Color(0xFF333333)
+            ),
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
+@Composable
+fun LowerPanel(databaseMenuItems: List<MenuItemRoom>, search: MutableState<String>) {
+    val categories = databaseMenuItems.map {
+        it.category.replaceFirstChar {character ->
+            character.uppercase()
+        }
+    }.toSet()
+    print("Categories:")
+    if(categories.isEmpty()){
+        print("true")
+    }
+    else{
+        print("false")
+    }
+
+    val selectedCategory = remember {
+        mutableStateOf("")
+    }
+
+    val items = if(search.value == ""){
+        databaseMenuItems
+
+    }
+    else{
+        databaseMenuItems.filter {
+            it.title.contains(search.value, ignoreCase = true)
+        }
+    }
+
+    val filteredItems = if(selectedCategory.value == "" || selectedCategory.value == "all"){
+        items
+    }
+    else{
+        items.filter {
+            it.category.contains(selectedCategory.value, ignoreCase = true)
+        }
+    }
+
+    Column {
+        MenuCategories(categories) {
+            selectedCategory.value = it
+        }
+        Spacer(modifier = Modifier.size(2.dp))
+        Column(modifier = Modifier.verticalScroll(rememberScrollState())
+        ) {
+            for (item in filteredItems){
+                MenuItem(item = item)
+            }
+        }
+    }
+}
+
+
+@Composable
+fun MenuCategories(categories: Set<String>, categoryLambda : (sel: String) -> Unit) {
+    val cat = remember {
+        mutableStateOf("")
+    }
+
+    Card(
+        elevation = CardDefaults.cardElevation(10.dp),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(
+            modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp)
+        ) {
+            Text(
+                text = stringResource(R.string.order_for_takeaway),
+                fontWeight = FontWeight.Bold
+            )
+
+            Row(modifier = Modifier.horizontalScroll(rememberScrollState())
+                .padding(top = 10.dp),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+
+                CategoryButton(category = "All"){
+                    cat.value = it.lowercase()
+                    categoryLambda(it.lowercase())
+                }
+
+                for (category in categories){
+                    CategoryButton(category = category){
+                        cat.value = it
+                        categoryLambda(it)
+                    }
+                }
             }
         }
     }
 }
 
 @Composable
-private fun LowerPanel(){
-    Column {
-        WeeklySpecialCard()
-        MenuDish()
+fun CategoryButton(category:String, selectedCategory: (sel: String) -> Unit) {
+    val isClicked = remember{
+        mutableStateOf(false)
     }
-}
-
-@Composable
-fun WeeklySpecialCard(){
-    Card(
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Text(
-            text = "Weekly Special",
-            fontSize = 26.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(8.dp)
+    Button(
+        onClick = {
+        isClicked.value = !isClicked.value
+        selectedCategory(category)
+    },
+        colors = ButtonDefaults.buttonColors(
+            contentColor = Color(0xFF496E57),
+            containerColor = Color(0xFFFBDABB)
         )
+    ) {
+        Text(text = category)
     }
 }
 
 @Composable
-fun MenuDish(){
-    LazyColumn {
-        items(Dishes){ Dish ->
-            MenuDish(Dish)
+fun MenuItem(item: MenuItemRoom) {
+    val itemDescription = if(item.description.length>100) {
+        item.description.substring(0,100) + ". . ."
+    }
+    else{
+        item.description
+    }
+
+    Card(
+        elevation = CardDefaults.cardElevation(4.dp),
+        modifier = Modifier.clickable {
+
+        }
+    ) {
+        Row(
+            Modifier.fillMaxWidth()
+                .padding(horizontal = 20.dp, vertical = 10.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(Modifier.fillMaxWidth(0.7f),
+                verticalArrangement = Arrangement.SpaceBetween) {
+                Text(text = item.title, fontWeight = FontWeight.Bold, modifier = Modifier.padding(bottom = 10.dp))
+                Text(text = itemDescription, modifier = Modifier.padding(bottom = 10.dp))
+                Text(text = "$ ${item.price}", fontWeight = FontWeight.Bold)
+            }
+
+            AsyncImage(model = item.imageUrl,
+                contentDescription = "",
+                Modifier.size(100.dp, 100.dp),
+                contentScale = ContentScale.Crop
+            )
         }
     }
 }

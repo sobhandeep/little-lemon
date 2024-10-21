@@ -1,6 +1,7 @@
 package com.example.littlelemon.screens
 
 import android.content.Context
+import android.view.ViewTreeObserver
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -10,7 +11,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -18,16 +21,22 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.NavHostController
 import com.example.littlelemon.R
 import com.example.littlelemon.HOME_ROUTE
@@ -38,6 +47,8 @@ fun OnboardingScreen(context: Context, navController: NavHostController){
     val  sharedPreferences = context.getSharedPreferences("Little Lemon", Context.MODE_PRIVATE)
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
+    val imeState = rememberImeState()
+    val scrollState = rememberScrollState()
     val firstName = remember {
         mutableStateOf("")
     }
@@ -47,10 +58,18 @@ fun OnboardingScreen(context: Context, navController: NavHostController){
     val email = remember {
         mutableStateOf("")
     }
+
+    LaunchedEffect(key1 = imeState.value){
+        if (imeState.value){
+            scrollState.scrollTo(scrollState.maxValue)
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(top = screenHeight / 30)
+            .verticalScroll(scrollState)
     ){
         Image(
             modifier = Modifier
@@ -116,7 +135,7 @@ fun OnboardingScreen(context: Context, navController: NavHostController){
                     .padding(start = 16.dp, end = 16.dp),
                 value = lastName.value,
                 onValueChange = {
-                    firstName.value = it
+                    lastName.value = it
                 },
                 singleLine = true,
                 shape = RoundedCornerShape(15.dp),
@@ -140,7 +159,7 @@ fun OnboardingScreen(context: Context, navController: NavHostController){
                     .padding(start = 16.dp, end = 16.dp),
                 value = email.value,
                 onValueChange = {
-                    firstName.value = it
+                    email.value = it
                 },
                 singleLine = true,
                 shape = RoundedCornerShape(15.dp),
@@ -205,4 +224,26 @@ fun validateRegistrationData(firstName:String, lastName: String, email: String):
     }
 
     return validated
+}
+
+@Composable
+fun rememberImeState(): State<Boolean> {
+    val imeState = remember {
+        mutableStateOf(false)
+    }
+
+    val view = LocalView.current
+    DisposableEffect(view) {
+        val listener = ViewTreeObserver.OnGlobalLayoutListener {
+            val isKeyboardOpen = ViewCompat.getRootWindowInsets(view)
+                ?.isVisible(WindowInsetsCompat.Type.ime()) ?: true
+            imeState.value = isKeyboardOpen
+        }
+
+        view.viewTreeObserver.addOnGlobalLayoutListener(listener)
+        onDispose {
+            view.viewTreeObserver.removeOnGlobalLayoutListener(listener)
+        }
+    }
+    return imeState
 }
